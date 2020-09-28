@@ -5,7 +5,7 @@
 [![GitHub watchers](https://img.shields.io/github/watchers/manbbo/call_for_help.svg?style=social&label=Watch)](https://github.com/manbbo/call_for_help) 
 [![GitHub followers](https://img.shields.io/github/followers/manbbo.svg?style=social&label=Follow)](https://github.com/manbbo)  
 
-> Currency Project é um projeto feito para processo seletivo na NKey onde eu preciso criar um conversor de moedas utilizando a api do (link)[https://exchangeratesapi.io/].
+> Currency Project é um projeto feito para processo seletivo na NKey. Ele é um conversor de moedas que utiliza a api do (link)[https://exchangeratesapi.io/] para fazer as conversões de moeda.
 
 ### Some Screenshots
 
