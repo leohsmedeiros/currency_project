@@ -20,7 +20,7 @@ class Coin_List extends StatefulWidget {
 
 // ignore: camel_case_types
 class _Coin_ListState extends State<Coin_List> {
-  String dropdownValue, textConverted, newCurrency;
+  String dropdownValue,  newCurrency;
 
   final List<String> items = [
   "CAD", "HKD", "ISK", "PHP", "DKK", "HUF",
@@ -31,13 +31,13 @@ class _Coin_ListState extends State<Coin_List> {
   "ILS", "KRW", "PLN"
   ];
 
-  final textConverter = TextEditingController();
+  final textConverted = TextEditingController(),textConverter = TextEditingController();
   @override
   void initState() {
     textConverter.text = '0.00';
     dropdownValue = 'USD';
     newCurrency = 'EUR';
-    textConverted = '0.00';
+    textConverted.text = '0.00';
     super.initState();
   }
 
@@ -190,7 +190,7 @@ class _Coin_ListState extends State<Coin_List> {
                                     setState(() {
                                       newCurrency = newValue;
                                       _refreshIndicatorKey.currentState.show();
-                                      textConverted =
+                                      textConverted.text =
                                       '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
                                       // aqui ele converte a moeda, passando por todas as etapas de conversao
                                     });
@@ -202,7 +202,7 @@ class _Coin_ListState extends State<Coin_List> {
                                 new Container(
                                   width: 200,
                                   height: 30,
-                                  child: TextFormField(
+                                  child: new TextFormField(
                                     controller: textConverter, // usado para converter a moeda futuramente
                                     keyboardType: TextInputType.numberWithOptions(
                                         decimal: true, signed: false),
@@ -216,7 +216,7 @@ class _Coin_ListState extends State<Coin_List> {
                                             textConverter.text.replaceFirst(",", ".");
                                         }
 
-                                        textConverted =
+                                        textConverted.text =
                                         '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
                                         // aqui ele converte a moeda, passando por todas as etapas de conversao, inclusive
                                       });
@@ -248,7 +248,7 @@ class _Coin_ListState extends State<Coin_List> {
                                   onChanged: (String newValue) {
                                     setState(() {
                                       dropdownValue = newValue;
-                                      textConverted =
+                                      textConverted.text =
                                       '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
                                     });
                                   },
@@ -257,12 +257,14 @@ class _Coin_ListState extends State<Coin_List> {
                                   width: 20,
                                 ),
                                 new Container(
-                                    width: 200,
-                                    height: 30,
-                                    child: Text(
-                                      textConverted,
-                                      style: TextStyle(fontSize: 20),
-                                    )),
+                                  width: 200,
+                                  height: 30,
+                                  child: new TextFormField(
+                                    controller: textConverted,
+                                    style: TextStyle(fontSize: 20),
+                                    readOnly: true
+                                  ),
+                                )
                               ],
                             )
                           ],
