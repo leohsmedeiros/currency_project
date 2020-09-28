@@ -9,12 +9,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Currency Project',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Coin_List(title: 'Flutter Demo Home Page'),
+      home: Coin_List(title: 'CURRENCY EXCHANGE'),
       debugShowCheckedModeBanner: false,
     );
   }

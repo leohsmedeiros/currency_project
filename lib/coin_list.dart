@@ -56,11 +56,11 @@ class _Coin_ListState extends State<Coin_List> {
       if (file.readAsStringSync().contains("${DateTime.now().year}"
           "-${(DateTime.now().month < 10) ? 0 : ""}${DateTime.now().month}"
           "-${DateTime.now().day}")) {
-        print("Tem arquivo");
+        print("Tem arquivo e tem a data");
         return Currency.fromJson(
             json.decode(file.readAsStringSync())); // incorpóra em um json
       } else {
-        print("Nao tem arquivo");
+        print("Tem arquivo e Nao tem a data");
         final response = await http
             .get('https://api.exchangeratesapi.io/latest?base=$newCurrency');
         if (response.statusCode == 200) {
@@ -114,177 +114,196 @@ class _Coin_ListState extends State<Coin_List> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(this.widget.title),
-          actions: <Widget>[
-            new IconButton(
-                icon: const Icon(Icons.refresh),
-                tooltip: 'Refresh',
-                onPressed: () {
-                  //atualizar o arquivo (refresh)
-                  _refreshIndicatorKey.currentState.show();
-                }),
-          ],
-        ),
-        body: new RefreshIndicator(
-          onRefresh: fetchCurrency,
-          key: _refreshIndicatorKey, // colocando a KEY
-          child: new FutureBuilder<Currency>(
-              future: fetchCurrency(), // ele faz refresh desse future
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return new Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      new Container(
-                        child: Text(
-                          "Última Atualização de $newCurrency:\n${snapshot.data.date}", // mostra a ultima
-                          // atualização e a ultima moeda colocada
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      new Container(
-                        height: 40,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DropdownButton(
-                            value: newCurrency, // pega o valor atual da moeda base
-                            icon: Icon(Icons.arrow_downward),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: TextStyle(color: Colors.deepPurple),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.deepPurpleAccent,
+        body: new Stack(
+          children: [
+            new Container(
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              padding: EdgeInsets.only(top: 30),
+              child: new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("${this.widget.title}", style: TextStyle(fontSize: 30, color: Colors.deepPurple),),
+                new IconButton(
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Refresh',
+                    onPressed: () {
+                      //atualizar o arquivo (refresh)
+                      _refreshIndicatorKey.currentState.show();
+                    }),
+              ],
+            ),),
+            Center(
+              child: new RefreshIndicator(
+                onRefresh: fetchCurrency,
+                key: _refreshIndicatorKey, // colocando a KEY
+                child: new FutureBuilder<Currency>(
+                    future: fetchCurrency(), // ele faz refresh desse future
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return new Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            new Container(
+                              height: 40,
                             ),
-                            items: <String>[
-                              "CAD",
-                              "HKD",
-                              "ISK",
-                              "PHP",
-                              "DKK",
-                              "HUF",
-                              "CZK",
-                              "GBP",
-                              "RON",
-                              "SEK",
-                              "IDR",
-                              "INR",
-                              "BRL",
-                              "RUB",
-                              "HRK",
-                              "JPY",
-                              "THB",
-                              "CHF",
-                              "EUR",
-                              "MYR",
-                              "BGN",
-                              "TRY",
-                              "CNY",
-                              "NOK",
-                              "NZD",
-                              "ZAR",
-                              "USD",
-                              "MXN",
-                              "SGD",
-                              "AUD",
-                              "ILS",
-                              "KRW",
-                              "PLN"
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                newCurrency = newValue;
-                                _refreshIndicatorKey.currentState.show();
-                              });
-                            },
-                          ),
-                          new Container(
-                            width: 20,
-                          ),
-                          new Container(
-                            width: 200,
-                            height: 30,
-                            child: TextFormField(
-                              controller: textConverter, // usado para converter a moeda futuramente
-                              keyboardType: TextInputType.numberWithOptions(
-                                  decimal: true, signed: false),
-                              onChanged: (String newValue) {
-                                setState(() {
-                                  if (textConverter.text.isEmpty)
-                                    textConverter.text = '0.00';
-                                  else {
-                                    if (textConverter.text.contains(","))
-                                      textConverter.text.replaceFirst(",", ".");
-                                  }
-
-                                  textConverted =
-                                      '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
-                                  // aqui ele converte a moeda, passando por todas as etapas de conversao, inclusive
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DropdownButton(
-                            value: dropdownValue, // ele troca o rating
-                            icon: Icon(Icons.arrow_downward),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: TextStyle(color: Colors.deepPurple),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.deepPurpleAccent,
-                            ),
-                            items: snapshot.data.rates.values.keys
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                dropdownValue = newValue;
-                                textConverted =
-                                '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
-                              });
-                            },
-                          ),
-                          new Container(
-                            width: 20,
-                          ),
-                          new Container(
-                              width: 200,
-                              height: 30,
+                            new Container(
                               child: Text(
-                                textConverted,
-                                style: TextStyle(fontSize: 20),
-                              )),
-                        ],
-                      )
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text("ERRO ao comunicar"),
-                  );
-                }
+                                "Última Atualização de $newCurrency:\n${snapshot.data.date}", // mostra a ultima
+                                // atualização e a ultima moeda colocada
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            new Container(
+                              height: 30,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                DropdownButton(
+                                  value: newCurrency, // pega o valor atual da moeda base
+                                  icon: Icon(Icons.arrow_downward),
+                                  iconSize: 24,
+                                  elevation: 16,
+                                  style: TextStyle(color: Colors.deepPurple),
+                                  underline: Container(
+                                    height: 2,
+                                    color: Colors.deepPurpleAccent,
+                                  ),
+                                  items: <String>[
+                                    "CAD",
+                                    "HKD",
+                                    "ISK",
+                                    "PHP",
+                                    "DKK",
+                                    "HUF",
+                                    "CZK",
+                                    "GBP",
+                                    "RON",
+                                    "SEK",
+                                    "IDR",
+                                    "INR",
+                                    "BRL",
+                                    "RUB",
+                                    "HRK",
+                                    "JPY",
+                                    "THB",
+                                    "CHF",
+                                    "EUR",
+                                    "MYR",
+                                    "BGN",
+                                    "TRY",
+                                    "CNY",
+                                    "NOK",
+                                    "NZD",
+                                    "ZAR",
+                                    "USD",
+                                    "MXN",
+                                    "SGD",
+                                    "AUD",
+                                    "ILS",
+                                    "KRW",
+                                    "PLN"
+                                  ].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String newValue) {
+                                    setState(() {
+                                      newCurrency = newValue;
+                                      _refreshIndicatorKey.currentState.show();
+                                      textConverted =
+                                      '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
+                                      // aqui ele converte a moeda, passando por todas as etapas de conversao
+                                    });
+                                  },
+                                ),
+                                new Container(
+                                  width: 20,
+                                ),
+                                new Container(
+                                  width: 200,
+                                  height: 30,
+                                  child: TextFormField(
+                                    controller: textConverter, // usado para converter a moeda futuramente
+                                    keyboardType: TextInputType.numberWithOptions(
+                                        decimal: true, signed: false),
+                                    style: TextStyle(fontSize: 20),
+                                    onChanged: (String newValue) {
+                                      setState(() {
+                                        if (textConverter.text.isEmpty)
+                                          textConverter.text = '0.00';
+                                        else {
+                                          if (textConverter.text.contains(","))
+                                            textConverter.text.replaceFirst(",", ".");
+                                        }
 
-                return Center(child: CircularProgressIndicator());
-              }),
-        ));
+                                        textConverted =
+                                        '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
+                                        // aqui ele converte a moeda, passando por todas as etapas de conversao, inclusive
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                DropdownButton(
+                                  value: dropdownValue, // ele troca o rating
+                                  icon: Icon(Icons.arrow_downward),
+                                  iconSize: 24,
+                                  elevation: 16,
+                                  style: TextStyle(color: Colors.deepPurple),
+                                  underline: Container(
+                                    height: 2,
+                                    color: Colors.deepPurpleAccent,
+                                  ),
+                                  items: snapshot.data.rates.values.keys
+                                      .map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String newValue) {
+                                    setState(() {
+                                      dropdownValue = newValue;
+                                      textConverted =
+                                      '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
+                                    });
+                                  },
+                                ),
+                                new Container(
+                                  width: 20,
+                                ),
+                                new Container(
+                                    width: 200,
+                                    height: 30,
+                                    child: Text(
+                                      textConverted,
+                                      style: TextStyle(fontSize: 20),
+                                    )),
+                              ],
+                            )
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text("ERRO ao comunicar"),
+                        );
+                      }
+
+                      return Center(child: CircularProgressIndicator());
+                    }),
+              ),
+            )
+          ],
+        )
+    );
   }
 }
 
