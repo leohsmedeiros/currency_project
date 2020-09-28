@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 // ignore: camel_case_types
 class Coin_List extends StatefulWidget {
@@ -16,29 +19,86 @@ class Coin_List extends StatefulWidget {
 
 // ignore: camel_case_types
 class _Coin_ListState extends State<Coin_List> {
-  Future<Currency> fetchCurrency() async { // metodo que pega os dados da API
-    final response = await http.get('https://api.ratesapi.io/api/latest');
-
-    if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      return Currency.fromJson(json.decode(response.body));
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load album');
-    }
-  }
-
-  String dropdownValue, textConverted;
+  String dropdownValue, textConverted, newCurrency;
 
   final textConverter = TextEditingController();
   @override
   void initState() {
     textConverter.text = '0.00';
     dropdownValue = 'USD';
+    newCurrency = 'EUR';
     textConverted = '0.00';
     super.initState();
+  }
+
+  Future<String> get _localPath async {
+    // pega o diretorio do celular
+    final directory = await getApplicationDocumentsDirectory();
+    print(directory.path);
+    return directory.path;
+  }
+
+  Future<File> _localFile(String coinPath) async {
+    // Cria referência do arquivo que quero
+    final path = await _localPath;
+    print(coinPath);
+    return File('$path/$coinPath.json');
+  }
+
+  Future<Currency> fetchCurrency() async {
+    // metodo que pega os dados da API
+
+    final file =
+        await _localFile(newCurrency); // pega as informações de arquivo local
+
+    // verifica se já existe a informação no arquivo
+    if (file.existsSync()) {
+      if (file.readAsStringSync().contains("${DateTime.now().year}"
+          "-${(DateTime.now().month < 10) ? 0 : ""}${DateTime.now().month}"
+          "-${DateTime.now().day}")) {
+        print("Tem arquivo");
+        return Currency.fromJson(
+            json.decode(file.readAsStringSync())); // incorpóra em um json
+      } else {
+        print("Nao tem arquivo");
+        final response = await http
+            .get('https://api.exchangeratesapi.io/latest?base=$newCurrency');
+        if (response.statusCode == 200) {
+          // se deu certo o request,
+          file.createSync(); // ele cria um arquivo novo,
+          file.writeAsStringSync(response.body); // copia o corpo da resposta
+          print(file
+              .readAsStringSync()); // printa a resposta pra ver se está tudo certo (a fins de debug somente)
+
+          var jsonresponse =
+              await Currency.fromJson(json.decode(file.readAsStringSync()));
+
+          if (jsonresponse != null) return jsonresponse; // incorpora em um Json
+        } else {
+          // joga excessao se o servidor nao responder a tempo
+          throw Exception('Failed to load currency');
+        }
+      }
+    } else {
+      print("Nao tem arquivo");
+      final response = await http
+          .get('https://api.exchangeratesapi.io/latest?base=$newCurrency');
+      if (response.statusCode == 200) {
+        // se deu certo o request,
+        file.createSync(); // ele cria um arquivo novo,
+        file.writeAsStringSync(response.body); // copia o corpo da resposta
+        print(file
+            .readAsStringSync()); // printa a resposta pra ver se está tudo certo (a fins de debug somente)
+
+        var jsonresponse =
+            await Currency.fromJson(json.decode(file.readAsStringSync()));
+
+        if (true) return jsonresponse; // incorpora em um Json
+      } else {
+        // joga excessao se o servidor nao responder a tempo
+        throw Exception('Failed to load currency');
+      }
+    }
   }
 
   @override
@@ -48,102 +108,183 @@ class _Coin_ListState extends State<Coin_List> {
   }
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  new GlobalKey<RefreshIndicatorState>();
+      new GlobalKey<RefreshIndicatorState>(); // pra manejar o Refresh Indicator
+  // e fazer com que o widget faça refresh
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(this.widget.title),
-        actions: <Widget>[
-          new IconButton(
-              icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
-              onPressed: () {
-                _refreshIndicatorKey.currentState.show();
+        appBar: new AppBar(
+          title: new Text(this.widget.title),
+          actions: <Widget>[
+            new IconButton(
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Refresh',
+                onPressed: () {
+                  //atualizar o arquivo (refresh)
+                  _refreshIndicatorKey.currentState.show();
+                }),
+          ],
+        ),
+        body: new RefreshIndicator(
+          onRefresh: fetchCurrency,
+          key: _refreshIndicatorKey, // colocando a KEY
+          child: new FutureBuilder<Currency>(
+              future: fetchCurrency(), // ele faz refresh desse future
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return new Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      new Container(
+                        child: Text(
+                          "Última Atualização de $newCurrency:\n${snapshot.data.date}", // mostra a ultima
+                          // atualização e a ultima moeda colocada
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      new Container(
+                        height: 40,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          DropdownButton(
+                            value: newCurrency, // pega o valor atual da moeda base
+                            icon: Icon(Icons.arrow_downward),
+                            iconSize: 24,
+                            elevation: 16,
+                            style: TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            items: <String>[
+                              "CAD",
+                              "HKD",
+                              "ISK",
+                              "PHP",
+                              "DKK",
+                              "HUF",
+                              "CZK",
+                              "GBP",
+                              "RON",
+                              "SEK",
+                              "IDR",
+                              "INR",
+                              "BRL",
+                              "RUB",
+                              "HRK",
+                              "JPY",
+                              "THB",
+                              "CHF",
+                              "EUR",
+                              "MYR",
+                              "BGN",
+                              "TRY",
+                              "CNY",
+                              "NOK",
+                              "NZD",
+                              "ZAR",
+                              "USD",
+                              "MXN",
+                              "SGD",
+                              "AUD",
+                              "ILS",
+                              "KRW",
+                              "PLN"
+                            ].map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                newCurrency = newValue;
+                                _refreshIndicatorKey.currentState.show();
+                              });
+                            },
+                          ),
+                          new Container(
+                            width: 20,
+                          ),
+                          new Container(
+                            width: 200,
+                            height: 30,
+                            child: TextFormField(
+                              controller: textConverter, // usado para converter a moeda futuramente
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true, signed: false),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  if (textConverter.text.isEmpty)
+                                    textConverter.text = '0.00';
+                                  else {
+                                    if (textConverter.text.contains(","))
+                                      textConverter.text.replaceFirst(",", ".");
+                                  }
+
+                                  textConverted =
+                                      '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
+                                  // aqui ele converte a moeda, passando por todas as etapas de conversao, inclusive
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          DropdownButton(
+                            value: dropdownValue, // ele troca o rating
+                            icon: Icon(Icons.arrow_downward),
+                            iconSize: 24,
+                            elevation: 16,
+                            style: TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            items: snapshot.data.rates.values.keys
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                dropdownValue = newValue;
+                                textConverted =
+                                '${double.tryParse(textConverter.text) * snapshot.data.rates.values[dropdownValue]}';
+                              });
+                            },
+                          ),
+                          new Container(
+                            width: 20,
+                          ),
+                          new Container(
+                              width: 200,
+                              height: 30,
+                              child: Text(
+                                textConverted,
+                                style: TextStyle(fontSize: 20),
+                              )),
+                        ],
+                      )
+                    ],
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("ERRO ao comunicar"),
+                  );
+                }
+
+                return Center(child: CircularProgressIndicator());
               }),
-        ],
-      ),
-
-      body: new RefreshIndicator(
-        onRefresh: fetchCurrency,
-        key: _refreshIndicatorKey,
-        child: new FutureBuilder<Currency>(future: fetchCurrency(), builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              new Container(
-                child: Text("Última Atualização: ${snapshot.data.date}"),
-              ),
-              new Container(
-                width: 270,
-                height: 30,
-                child: TextFormField(
-                  controller: textConverter,
-                  keyboardType: TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: false
-                  ),
-                  onChanged: (String newValue) {
-                    setState(() {
-                      if (textConverter.text.isEmpty)
-                        textConverter.text = '0.00';
-                      else {
-                        if (textConverter.text.contains(","))
-                          textConverter.text.replaceFirst(",", ".");
-                      }
-
-                      textConverted = '${double.tryParse(textConverter.text)*snapshot.data.rates.values[dropdownValue]}';
-                    });
-                  },// Only numbers can be entered
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DropdownButton(
-                    value: dropdownValue,
-                    icon: Icon(Icons.arrow_downward),
-                    iconSize: 24,
-                    elevation: 16,
-                    style: TextStyle(
-                        color: Colors.deepPurple
-                    ),
-                    underline: Container(
-                      height: 2,
-                      color: Colors.deepPurpleAccent,
-                    ),
-                    items: snapshot.data.rates.values.keys.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String newValue) {
-                      setState(() {
-                        dropdownValue = newValue;
-
-                      });
-                    },
-                  ), new Container(
-                    width: 20,
-                  ), new Container(
-                      width: 200,
-                      height: 30,
-                      child: Text(textConverted, style: TextStyle(fontSize: 20),)
-                  ),
-                ],
-              )
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return Center(child: Text("ERRO ao comunicar"),);
-        }
-
-        return Center(child: CircularProgressIndicator());
-      }),)
-    );
+        ));
   }
 }
 
@@ -157,15 +298,12 @@ class Currency {
   final String base, date;
   final Rates rates;
 
-  Currency({this.base,
-    this.rates,
-    this.date
-   });
+  Currency({this.base, this.rates, this.date});
 
   factory Currency.fromJson(Map<String, dynamic> json) {
     return Currency(
       base: json['base'],
-      rates: Rates.fromJson(json['rates']),// as Map<String, Double>,
+      rates: Rates.fromJson(json['rates']), // as Map<String, Double>,
       date: json['date'],
     );
   }
@@ -178,8 +316,6 @@ class Rates {
 
   factory Rates.fromJson(Map<String, dynamic> json) {
     return Rates(
-      //keys: json.keys.toList(),
-      values: json
-    );
+        values: json);
   }
 }
