@@ -7,6 +7,19 @@
 
 > Currency Project é um projeto feito para processo seletivo na NKey onde eu preciso criar um conversor de moedas utilizando a api do (link)[https://exchangeratesapi.io/].
 
+### Some Screenshots
+
+- Type a number and you're going to see the magic!
+
+  <img src="https://github.com/manbbo/currency_project/blob/master/images/typing.png"  height="400em"/>
+    
+- Changing the Currency
+
+    <img src="https://github.com/manbbo/currency_project/blob/master/images/changing1.png" height="400em"/><img src="https://github.com/manbbo/currency_project/blob/master/images/othercurr.png"  height="400em"/>
+    
+- And you can also change the second one
+    <img src="https://github.com/manbbo/currency_project/blob/master/images/changing1.png" height="400em"/> <img src="https://github.com/manbbo/currency_project/blob/master/images/othercurr2.png"  height="400em"/>
+    
 ## Installation
 
 If you want to use Android Studio, then [download](https://developer.android.com/studio?hl=es) it through the website;
