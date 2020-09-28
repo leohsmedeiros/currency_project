@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 class Coin_List extends StatefulWidget {
   final String title; // Title bar, o titulo que a pagina terá
 
+
   Coin_List({this.title});
 
   @override
@@ -20,6 +21,15 @@ class Coin_List extends StatefulWidget {
 // ignore: camel_case_types
 class _Coin_ListState extends State<Coin_List> {
   String dropdownValue, textConverted, newCurrency;
+
+  final List<String> items = [
+  "CAD", "HKD", "ISK", "PHP", "DKK", "HUF",
+  "CZK", "GBP", "RON", "SEK", "IDR", "INR",
+  "BRL", "RUB", "HRK", "JPY", "THB", "CHF",
+  "EUR", "MYR", "BGN", "TRY", "CNY", "NOK",
+  "NZD", "ZAR", "USD", "MXN", "SGD", "AUD",
+  "ILS", "KRW", "PLN"
+  ];
 
   final textConverter = TextEditingController();
   @override
@@ -123,7 +133,7 @@ class _Coin_ListState extends State<Coin_List> {
               child: new Column(
                 mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("${this.widget.title}", style: TextStyle(fontSize: 30, color: Colors.deepPurple),),
+                Text("${this.widget.title}", style: TextStyle(fontSize: 30, color: Colors.deepPurpleAccent),),
                 new IconButton(
                     icon: const Icon(Icons.refresh),
                     tooltip: 'Refresh',
@@ -170,41 +180,7 @@ class _Coin_ListState extends State<Coin_List> {
                                     height: 2,
                                     color: Colors.deepPurpleAccent,
                                   ),
-                                  items: <String>[
-                                    "CAD",
-                                    "HKD",
-                                    "ISK",
-                                    "PHP",
-                                    "DKK",
-                                    "HUF",
-                                    "CZK",
-                                    "GBP",
-                                    "RON",
-                                    "SEK",
-                                    "IDR",
-                                    "INR",
-                                    "BRL",
-                                    "RUB",
-                                    "HRK",
-                                    "JPY",
-                                    "THB",
-                                    "CHF",
-                                    "EUR",
-                                    "MYR",
-                                    "BGN",
-                                    "TRY",
-                                    "CNY",
-                                    "NOK",
-                                    "NZD",
-                                    "ZAR",
-                                    "USD",
-                                    "MXN",
-                                    "SGD",
-                                    "AUD",
-                                    "ILS",
-                                    "KRW",
-                                    "PLN"
-                                  ].map<DropdownMenuItem<String>>((String value) {
+                                  items: items.map<DropdownMenuItem<String>>((String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),

@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="af44927a-792e-452c-b703-35393f094bb0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/coin_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/coin_list.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +69,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601329299435</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Final touches!!!">
+      <created>1601330667756</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1601330667756</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -79,17 +84,18 @@
     <MESSAGE value="Adding a beautifull README.md" />
     <MESSAGE value="First stage completed - added a way of reading JSON data on Flutter through coin_list.dart" />
     <MESSAGE value="Feito todo o projeto, somente preparando os toques finais e testes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Feito todo o projeto, somente preparando os toques finais e testes" />
+    <MESSAGE value="Final touches!!!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final touches!!!" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2369" y="180" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1601308661142">
       <screen x="1920" y="40" width="1536" height="824" />
     </state>
     <state x="2369" y="180" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.40.1920.1040/1920.40.1536.824@1920.40.1536.824" timestamp="1601308661142" />
-    <state x="2234" y="43" key="CommitChangelistDialog2" timestamp="1601329298674">
+    <state x="2234" y="43" key="CommitChangelistDialog2" timestamp="1601330666942">
       <screen x="1920" y="40" width="1536" height="824" />
     </state>
-    <state x="2234" y="43" key="CommitChangelistDialog2/0.40.1920.1040/1920.40.1536.824@1920.40.1536.824" timestamp="1601329298674" />
+    <state x="2234" y="43" key="CommitChangelistDialog2/0.40.1920.1040/1920.40.1536.824@1920.40.1536.824" timestamp="1601330666942" />
     <state width="1491" height="213" key="GridCell.Tab.0.bottom" timestamp="1601329541633">
       <screen x="1920" y="40" width="1536" height="824" />
     </state>
@@ -119,11 +125,11 @@
       <screen x="1920" y="40" width="1536" height="824" />
     </state>
     <state x="2498" y="369" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.40.1920.1040/1920.40.1536.824@1920.40.1536.824" timestamp="1601307291520" />
-    <state width="507" height="88" key="javadoc.popup.new" timestamp="1601330149086">
+    <state width="507" height="88" key="javadoc.popup.new" timestamp="1601330795796">
       <screen x="1920" y="40" width="1536" height="824" />
     </state>
     <state width="633" height="111" key="javadoc.popup.new/0.40.1920.1040/1920.40.1536.824@0.40.1920.1040" timestamp="1601303441141" />
-    <state width="507" height="88" key="javadoc.popup.new/0.40.1920.1040/1920.40.1536.824@1920.40.1536.824" timestamp="1601330149086" />
+    <state width="507" height="88" key="javadoc.popup.new/0.40.1920.1040/1920.40.1536.824@1920.40.1536.824" timestamp="1601330795796" />
     <state x="2345" y="105" width="672" height="676" key="search.everywhere.popup" timestamp="1601318508219">
       <screen x="1920" y="40" width="1536" height="824" />
     </state>
