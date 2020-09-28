@@ -19,8 +19,9 @@
     
 - And you can also change the second one
     
-    <img src="https://github.com/manbbo/currency_project/blob/master/images/changing1.png" height="400em"/> <img src="https://github.com/manbbo/currency_project/blob/master/images/othercurr2.png"  height="400em"/>
+    <img src="https://github.com/manbbo/currency_project/blob/master/images/changing1.png" height="400em"/> <img src="https://github.com/manbbo/currency_project/blob/master/images/othercurr2.png"  height="400em"/>  
     
+    </br>
 ## Installation
 
 If you want to use Android Studio, then [download](https://developer.android.com/studio?hl=es) it through the website;
